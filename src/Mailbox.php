@@ -62,7 +62,17 @@ class Mailbox extends component
 	}
 
 	protected function initImapStream() {
-		$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
+
+		if ( function_exists('imap2_open') ) {
+
+			$imapStream = @imap2_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
+
+		} else {
+			
+			$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
+				
+		}
+
 		if(!$imapStream) {
 			throw new Exception('Connection error: ' . imap_last_error());
 		}
