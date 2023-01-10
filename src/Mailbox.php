@@ -63,15 +63,9 @@ class Mailbox extends component
 
 	protected function initImapStream() {
 
-		if ( function_exists('imap2_open') ) {
 
-			$imapStream = @imap2_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
+		$imapStream = @imap2_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
 
-		} else {
-			
-			$imapStream = @imap_open($this->imapPath, $this->imapLogin, $this->imapPassword, $this->imapOptions, $this->imapRetriesNum, $this->imapParams);
-				
-		}
 
 		if(!$imapStream) {
 			throw new Exception('Connection error: ' . imap_last_error());
@@ -182,7 +176,7 @@ class Mailbox extends component
      */
     public function searchMailbox($criteria = 'ALL')
     {
-        $mailsIds = imap_search($this->getImapStream(), $criteria, SE_UID, $this->searchEncoding);
+        $mailsIds = imap2_search($this->getImapStream(), $criteria, SE_UID, $this->searchEncoding);
 
         return $mailsIds ? $mailsIds : array();
     }
@@ -310,7 +304,7 @@ class Mailbox extends component
 	 * @return array
 	 */
 	public function getMailsInfo(array $mailsIds) {
-		$mails = imap_fetch_overview($this->getImapStream(), implode(',', $mailsIds), FT_UID);
+		$mails = imap2_fetch_overview($this->getImapStream(), implode(',', $mailsIds), FT_UID);
 		if(is_array($mails) && count($mails))
 		{
 			foreach($mails as &$mail)
@@ -417,7 +411,7 @@ class Mailbox extends component
      * @return IncomingMail
      */
 	public function getMail($mailId, $markAsSeen = true) {
-		$head = imap_rfc822_parse_headers(imap_fetchheader($this->getImapStream(), $mailId, FT_UID));
+		$head = imap_rfc822_parse_headers(imap2_fetchheader($this->getImapStream(), $mailId, FT_UID));
 
 		$mail = new IncomingMail();
 		$mail->id = $mailId;
@@ -451,7 +445,7 @@ class Mailbox extends component
 			}
 		}
 
-		$mailStructure = imap_fetchstructure($this->getImapStream(), $mailId, FT_UID);
+		$mailStructure = imap2_fetchstructure($this->getImapStream(), $mailId, FT_UID);
 
 		if(empty($mailStructure->parts)) {
 			$this->initMailPart($mail, $mailStructure, 0, $markAsSeen);
@@ -470,7 +464,7 @@ class Mailbox extends component
         if(!$markAsSeen) {
             $options |= FT_PEEK;
         }
-		$data = $partNum ? imap_fetchbody($this->getImapStream(), $mail->id, $partNum, $options) : imap_body($this->getImapStream(), $mail->id, $options);
+		$data = $partNum ? imap2_fetchbody($this->getImapStream(), $mail->id, $partNum, $options) : imap2_body($this->getImapStream(), $mail->id, $options);
 
 		if($partStructure->encoding == 1) {
 			$data = imap_utf8($data);
