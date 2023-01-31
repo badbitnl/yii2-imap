@@ -206,7 +206,7 @@ class Mailbox extends component
 	 * @return bool
 	 */
 	public function expungeDeletedMails() {
-		return imap_expunge($this->getImapStream());
+		return imap2_expunge($this->getImapStream());
 	}
 
 	/**
