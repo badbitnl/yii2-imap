@@ -68,7 +68,7 @@ class Mailbox extends component
 
 
 		if(!$imapStream) {
-			throw new Exception('Connection error: ' . imap_last_error());
+			throw new Exception('Connection error: ' . imap2_last_error());
 		}
 		return $imapStream;
 	}
@@ -265,7 +265,7 @@ class Mailbox extends component
 	 * @return bool
 	 */
 	public function setFlag(array $mailsIds, $flag) {
-		return imap_setflag_full($this->getImapStream(), implode(',', $mailsIds), $flag, ST_UID);
+		return imap2_setflag_full($this->getImapStream(), implode(',', $mailsIds), $flag, ST_UID);
 	}
 
 	/**
@@ -276,7 +276,7 @@ class Mailbox extends component
 	 * @return bool
 	 */
 	public function clearFlag(array $mailsIds, $flag) {
-		return imap_clearflag_full($this->getImapStream(), implode(',', $mailsIds), $flag, ST_UID);
+		return imap2_clearflag_full($this->getImapStream(), implode(',', $mailsIds), $flag, ST_UID);
 	}
 
 	/**
